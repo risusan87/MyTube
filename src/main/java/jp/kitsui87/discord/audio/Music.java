@@ -11,9 +11,6 @@ import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -26,6 +23,8 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+
+import jp.kitsui87.discord.MyTubeCore;
 
 /**
  * Class represents music that provides low level functionality to play an audio data.
@@ -80,7 +79,7 @@ public class Music {
 
     /**
      * Gets the bitrate.
-     * @return Bitrate of this music in kbps(Kilo Bit Per Second).
+     * @return Bitrate of this music in kbps.
      */
     public int getAudioBitrate() {
         int sampleRate = (int) this.audioFormat.getSampleRate();
@@ -91,7 +90,7 @@ public class Music {
 
     /**
      * Initiates the download of this music.
-     * This method must get called before start calling getAudioData()
+     * This method must get called for getAudioData() to extract data.
      */
     public void openDownloadStream() {
 
@@ -201,16 +200,10 @@ public class Music {
     /**
      * Extracts an audio data and creates Music instance from it.
      * 
-     * Object being returned is an instance of Future class which allows the process being
-     * done asynchronously, avoiding intrrupting the main process.
-     * 
-     * To get the result, call Future.get(). This call will block the main process to wait
-     * until the retrieval finishes, then returns the Music object.
-     * 
      * @param ytURL  URL to the single video.
-     * @return Future object represents asynchrinous task retrieving the url.
+     * @return Music
      */
-    public static Future<Music> getYouTubeAudio(String ytURL) {
+    public static Music getYouTubeAudio(String ytURL) {
         
         if (!(ytURL.startsWith("https://www.youtube.com") && (ytURL.contains("v="))))
             return null;
@@ -226,7 +219,7 @@ public class Music {
             YouTube.Videos.List videoRequest = clientAPI.videos().list("snippet, contentDetails");
             System.out.println("ID: " + id);
             videoRequest.setId(id);
-            videoRequest.setKey("AIzaSyCsHtyayRx1PPB14EVlRkOdYQcTR8lXYc8");
+            videoRequest.setKey(MyTubeCore.getGoogleKey());
             VideoListResponse response = videoRequest.execute();
             if (!response.getItems().isEmpty()) {
                 Video video = response.getItems().get(0);
@@ -239,33 +232,28 @@ public class Music {
             return null;
         }
 
-        final long f_length = length;
-        final String f_title = title;
-        return CompletableFuture.supplyAsync(() -> {
-
-            ProcessBuilder builder = new ProcessBuilder("yt-dlp", "-g", ytURL);
-            String result = null;
-            Process ytdlp = null;
-            try {
-                ytdlp = builder.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            try (
-                InputStreamReader isr = new InputStreamReader(ytdlp.getInputStream());
-                BufferedReader br = new BufferedReader(isr);
-            ) {
-                String line;
-                while ((line = br.readLine()) != null) result = line;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                ytdlp.destroy();
-            }
-            return new Music(f_length, f_title, result);
-
-        });
+        ProcessBuilder builder = new ProcessBuilder("yt-dlp", "-g", ytURL);
+        String result = null;
+        Process ytdlp = null;
+        try {
+            ytdlp = builder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        try (
+            InputStreamReader isr = new InputStreamReader(ytdlp.getInputStream());
+            BufferedReader br = new BufferedReader(isr);
+        ) {
+            String line;
+            while ((line = br.readLine()) != null)
+                result = line;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            ytdlp.destroy();
+        }
+        return new Music(length, title, result);
 
     }
 
@@ -274,8 +262,7 @@ public class Music {
      * If the link is direct to a single video, return List is size of 1 and will
      * contain the ID of the video.
      * If the link is to a play list, it will return the List of video IDs inside
-     * the
-     * playlist.
+     * the playlist.
      */
     public static List<String> getYouTubeLinks(String url) {
 
@@ -289,7 +276,7 @@ public class Music {
                 try {
                     YouTube.PlaylistItems.List playListRequest = clientAPI.playlistItems().list("snippet");
                     playListRequest.setPlaylistId(id);
-                    playListRequest.setKey("AIzaSyCsHtyayRx1PPB14EVlRkOdYQcTR8lXYc8");
+                    playListRequest.setKey(MyTubeCore.getGoogleKey());
                     String nextPageToken = "";
                     List<String> videoIds = new ArrayList<>();
                     do {
