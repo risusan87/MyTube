@@ -1,5 +1,6 @@
 # MyTube Discord Bot
 MyTube is a simple Discord bot that allows users to stream YouTube videos in their voice channels.
+This project and bot is not meant to be publicly released. By any chance someone wanted a copy of this bot, go ahead and clone this repository.
 
 How to stream an audio in 2 steps:</br>
 1. `/join` to make the bot join in a vc you are in.
