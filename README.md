@@ -12,3 +12,6 @@ Functionality for audio player actions such as skipping and shuffling is current
 
 **Important Note: This bot is not officially endorsed or affiliated with YouTube in any way, and using it to stream copyrighted content may violate YouTube's terms of service.**
 
+# Development
+MyTube is written in Java version 8. All dependencies are included as a maven project. Make sure to have maven installed on your machine.
+
