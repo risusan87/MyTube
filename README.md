@@ -14,4 +14,5 @@ Functionality for audio player actions such as skipping and shuffling is current
 
 # Development
 MyTube is written in Java version 8. All dependencies are included as a maven project. Make sure to have maven installed on your machine.
+add .secret file under sec/main/resources
 
