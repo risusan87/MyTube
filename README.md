@@ -10,9 +10,9 @@ Functionality for audio player actions such as skipping and shuffling is current
 `/skip` to skip the current music playing.</br>
 `/playpause` to toggle Play/Pause in the track.</br>
 
-**Important Note: This bot is not officially endorsed or affiliated with YouTube in any way, and using it to stream copyrighted content may violate YouTube's terms of service.**
+**This bot is not officially endorsed or affiliated with YouTube in any way, and using it to stream copyrighted content may violate YouTube's terms of service.**
 
 # Development
-MyTube is written in Java version 8. All dependencies are included as a maven project. Make sure to have maven installed on your machine.
-add .secret file under sec/main/resources
+MyTube is written in Java8. All dependencies are included as a maven project. Make sure to have maven installed on your machine.
+add `mytube.secret` file under `src/main/resources`
 
