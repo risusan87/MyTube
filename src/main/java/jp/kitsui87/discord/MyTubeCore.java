@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.kitsui87.discord.audio.AudioPlayer;
 import jp.kitsui87.discord.audio.Music;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -42,18 +45,10 @@ public class MyTubeCore implements EventListener {
     public static void main(String[] args) throws Exception {
 
         // load keys
-        final String secretLocation = "./secret.txt";
-        try (
-            FileReader fr = new FileReader(new File(secretLocation));
-            BufferedReader br = new BufferedReader(fr);
-        ) {
-            botkey = br.readLine();
-            ytkey = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        System.out.printf("\nbot key read: %s\nyt key read: %s\n", botkey, ytkey);
+        String[] keys = _loadKeys();
+        botkey = keys[0];
+        ytkey = keys[1];
+        System.out.printf("\nbot key read: %s\nyt key read: %s\n", keys[0], keys[1]);
 
         JDA jda = JDABuilder.createDefault(getBotKey())
                 .addEventListeners(new MyTubeCore())
@@ -222,6 +217,34 @@ public class MyTubeCore implements EventListener {
         }
     }
 
+    /**
+     * load key
+     * @return [0]: jda, [1]: yt
+     */
+    private static String[] _loadKeys() {
+
+        final String path = "src/main/resources/mytube.secret";
+        try (
+            FileReader fr = new FileReader(path);
+            BufferedReader br = new BufferedReader(fr);
+        ) {
+            String[] keys = new String[2];
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            while ((line = br.readLine()) != null)
+                sb.append(line);
+            JsonNode keyJson = new ObjectMapper().readTree(sb.toString());
+            keys[0] = keyJson.get("discord_key").asText();
+            keys[1] = keyJson.get("ytapi_key").asText();
+            return keys;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        return null;
+
+    }
+    
     public static final String getGoogleKey() {
         return ytkey;
     }
