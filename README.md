@@ -14,5 +14,8 @@ Functionality for audio player actions such as skipping and shuffling is current
 
 # Development
 MyTube is written in Java8. All dependencies are included as a maven project. Make sure to have maven installed on your machine.
-add `mytube.secret` file under `src/main/resources`
+Add `mytube.secret` file under `src/main/resources` in json format providing the keys `discord_key` and `ytapi_key`. Obtain discord key from Discord Development portal and Youtube key from Youtube Data API v3.
+You will need to install yt-dlp and ffmpeg:
+yt-dlp: https://github.com/yt-dlp/yt-dlp
+FFmpeg: https://github.com/FFmpeg/FFmpeg
 
