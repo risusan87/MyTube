@@ -114,7 +114,7 @@ public class MyTubeCore implements EventListener {
                     }
                     // The command invoker is not in a visible vc
                     if (targetVc == null) {
-                        commandEvent.reply("Please join in a visible voice channel in the server you run the command.");
+                        commandEvent.reply("Please join in a visible voice channel in the server you run the command.").queue();
                         return;
                     }
 
