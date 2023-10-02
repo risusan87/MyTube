@@ -28,24 +28,13 @@ import jp.kitsui87.discord.MyTubeCore;
 
 /**
  * Class represents music that provides low level functionality to play an audio data.
- * 
- * To obtain the object of this class, use the static method provided in this class.
- * Music object will be in response of keeping track on current location in stream of data of 
- * the music being played.
- * 
- * Specified chunk of audio data of the music is retrieved by calling Music.getAudioData(int length).
- * This will return ByteBuffer object of containing the chunk of data in requested size at the current
- * location in audio stream offset, or returns null otherwise.
- * 
- * The offset will reset to the first location by calling rewind() method.
- * 
- * Each Music object that loadMusic() has been called must get finalized by calling Music.disposeStream()
- * to avoid resource leaking.
+ * Basically an instance of this class is an AudioInputStream
  * 
  * @author kistui#8381
  */
 public class Music {
     
+    /* TODO: Static volatility */
     private static YouTube clientAPI = null;
     static {
         try {
